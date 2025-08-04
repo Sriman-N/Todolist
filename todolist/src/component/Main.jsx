@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TodoForm from "./TodoForm";
 
-const Main = () => {
+const Main = ({ setStats }) => {
   const [todos, setTodos] = useState([]);
 
   const addTodo = (task) => {
@@ -20,8 +20,21 @@ const Main = () => {
     setTodos(updatedTodos);
   };
 
+  const deleteTodo = (id) => {
+    const filtered = todos.filter((todo) => todo.id !== id);
+    setTodos(filtered);
+  };
+
+  useEffect(() => {
+    const numItems = todos.length;
+    const numCompleted = todos.filter((todo) => todo.completed).length;
+    const percentage =
+      numItems === 0 ? 0 : Math.round((numCompleted / numItems) * 100);
+    setStats({ numItems, numCompleted, percentage });
+  }, [todos, setStats]);
+
   return (
-    <div className="main">
+    <div className="mainWrapper">
       <TodoForm onAddTodo={addTodo} />
 
       <ul className="todoList">
@@ -34,9 +47,17 @@ const Main = () => {
             >
               {todo.task}
             </span>
-            <button onClick={() => toggleComplete(todo.id)} className="doneBtn">
-              {todo.completed ? "Undo" : "Done"}
-            </button>
+            <div className="btn">
+              <button
+                onClick={() => toggleComplete(todo.id)}
+                className="doneBtn"
+              >
+                {todo.completed ? "Undo" : "Done"}
+              </button>
+              <button onClick={() => deleteTodo(todo.id)} className="deleteBtn">
+                Delete
+              </button>
+            </div>
           </li>
         ))}
       </ul>

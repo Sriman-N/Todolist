@@ -3,6 +3,7 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+
 .headerWrapper {
   width: 100%;
   height: 70px;
@@ -11,15 +12,18 @@ body {
   justify-content: space-evenly;
   align-items: center;
 }
+
 .footerWrapper {
   width: 100%;
-  padding: 2px;
+  padding: 10px;
   border-top: 2px solid grey;
-  margin-top: auto;
   display: flex;
   justify-content: center;
+  text-align: center;
 }
+
 .mainWrapper {
+  flex: 1;
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
@@ -53,26 +57,84 @@ body {
   font-size: 16px;
   background-color: #28c76f;
   color: white;
-  border: none;
+  border-color: #28c76f;
   cursor: pointer;
 }
+
+.addBtn:hover {
+  background-color: lightgreen;
+  color: black;
+  border: 1px solid black;
+}
+
 .todoList {
   list-style-type: none;
   padding: 0;
+  width: 100%;
 }
 
 .todoItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 16px;
   margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 .doneBtn {
   background-color: #28c76f;
   color: white;
-  border: none;
+  border-color: #28c76f;
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+.doneBtn:hover {
+  background-color: lightgreen;
+  color: black;
+  border: 1px solid black;
+}
+
+.deleteBtn {
+  background-color: red;
+  color: white;
+  border-color: red;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.deleteBtn:hover {
+  background-color: rgb(240, 87, 87);
+  color: black;
+  border: 1px solid black;
+}
+
+.btn {
+  display: flex;
+  gap: 10px;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: 100px auto;
+  gap: 12px;
+}
+
+.loginInput {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.loginBtn {
+  padding: 10px;
+  background-color: #28c76f;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
 }
