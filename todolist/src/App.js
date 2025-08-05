@@ -12,9 +12,27 @@ function App() {
     percentage: 0,
   });
 
-  const handleLogin = ({ username, password }) => {
-    console.log("Logging in: ", username, password);
-    setIsLoggedIn(true);
+  // Just a simple function now
+  const handleLogin = async ({ username, password }) => {
+    try {
+      const res = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert("Login successful!");
+        setIsLoggedIn(true);
+      } else {
+        alert("Login failed: " + data.message);
+      }
+    } catch (err) {
+      alert("Server error. Please try again later.");
+      console.error("Login error:", err);
+    }
   };
 
   return (

@@ -12,12 +12,14 @@ const Login = ({ onLogin }) => {
       return;
     }
 
+    // ✅ Pass username & password to parent
     onLogin({ username, password });
   };
 
   return (
     <form onSubmit={handleSubmit} className="loginForm">
       <h2>Login</h2>
+
       <input
         type="text"
         placeholder="Username"
@@ -26,7 +28,7 @@ const Login = ({ onLogin }) => {
         className="loginInput"
       />
       <input
-        type="text"
+        type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
