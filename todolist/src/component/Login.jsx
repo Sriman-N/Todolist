@@ -18,7 +18,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <form onSubmit={handleSubmit} className="loginForm">
-      <h2>Login</h2>
+      <h1>Todolist Login</h1>
 
       <input
         type="text"

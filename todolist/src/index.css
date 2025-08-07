@@ -9,8 +9,9 @@ body {
   height: 70px;
   border-bottom: 2px solid gray;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
+  padding: 0 20px;
 }
 
 .footerWrapper {
@@ -137,4 +138,40 @@ body {
   font-size: 16px;
   border: none;
   cursor: pointer;
+}
+
+.dropdownWrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: auto;
+  margin-right: 40px;
+}
+
+.menuButton {
+  font-size: 1.5rem;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.dropdownMenu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1000;
+}
+
+.dropdownMenu button {
+  padding: 5px;
+  background: white;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.dropdownMenu button:hover {
+  background-color: #f0f0f0;
 }

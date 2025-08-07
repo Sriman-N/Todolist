@@ -1,35 +1,74 @@
-const express = require("express"); // express is a package that can help build servers with a few lines of code
-const fs = require("fs"); // fs is used to read files
-const cors = require("cors"); // cors stands for Cross-Origin Resource Sharing which allows React (Port 3000) to talk to this backend (Port 5000)
+const express = require("express"); // express helps build the server
+const fs = require("fs"); // file system module to read/write files
+const cors = require("cors"); // allows React (frontend) to talk to this server (backend)
 
-//Creating the server app
 const app = express();
 const PORT = 5000;
 
-app.use(cors()); //accept requests from port 3000
-app.use(express.json()); //understand JSON data that would be sent by React
+app.use(cors()); // Allow cross-origin requests from React (port 3000)
+app.use(express.json()); // Automatically parse incoming JSON data
 
+// LOGIN ROUTE
 app.post("/login", (req, res) => {
-  // this is basically saying: "when someone sends a POST request to /login, run this function"
-  const { username, password } = req.body; //getting the username and password from the request.body
-  const users = JSON.parse(fs.readFileSync("users.json", "utf-8")); //reads the users.json file and loads all the user info
-  const user = users.find((u) => u.username === username); //searches the list for someone with the same username
+  const { username, password } = req.body;
+
+  const users = JSON.parse(fs.readFileSync("users.json", "utf-8")); // read users
+  const user = users.find((u) => u.username === username); // find matching user
 
   if (!user) {
-    //if user doesn't exist or password is wrong, then reject it
-    return res.status(401).json({ success: false, message: "User not Found" });
+    return res.status(401).json({ success: false, message: "User not found" });
   }
 
   if (user.password !== password) {
     return res
       .status(401)
-      .json({ success: false, message: "Incorrect Password" });
+      .json({ success: false, message: "Incorrect password" });
   }
 
-  return res.json({ success: true, message: "Login successful!" });
+  return res.json({ success: true, message: "Login successful" });
 });
 
-//Starting the server
+// REGISTER ROUTE
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+
+  const users = JSON.parse(fs.readFileSync("users.json", "utf-8"));
+  const userExists = users.find((u) => u.username === username);
+
+  if (userExists) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Username already exists" });
+  }
+
+  users.push({ username, password });
+  fs.writeFileSync("users.json", JSON.stringify(users, null, 2), "utf-8");
+
+  return res.json({ success: true, message: "User registered successfully" });
+});
+
+// SAVE TODOS ROUTE
+app.post("/save-todos", (req, res) => {
+  const { username, todos } = req.body;
+
+  const allTodos = JSON.parse(fs.readFileSync("todos.json", "utf-8") || "{}");
+  allTodos[username] = todos;
+  fs.writeFileSync("todos.json", JSON.stringify(allTodos, null, 2), "utf-8");
+
+  return res.json({ success: true, message: "Todos saved" });
+});
+
+// GET TODOS ROUTE
+app.post("/get-todos", (req, res) => {
+  const { username } = req.body;
+
+  const allTodos = JSON.parse(fs.readFileSync("todos.json", "utf-8") || "{}");
+  const userTodos = allTodos[username] || [];
+
+  return res.json({ success: true, todos: userTodos });
+});
+
+// START SERVER
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
