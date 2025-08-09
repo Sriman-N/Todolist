@@ -9,6 +9,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [username, setUsername] = useState("");
+  const [prefilledUsername, setPrefilledUsername] = useState("");
 
   const [stats, setStats] = useState({
     numItems: 0,
@@ -64,9 +65,10 @@ function App() {
 
       if (res.ok && data.success) {
         alert("Registration successful! You can now log in.");
+        setPrefilledUsername(username);
         setShowRegister(false);
       } else {
-        alert("Registration failed: " + data.message);
+        alert("Registration failed: " + (data.message || res.statusText));
       }
     } catch (err) {
       alert("Server error during registration. Try again later.");
@@ -101,7 +103,7 @@ function App() {
         </>
       ) : (
         <>
-          <Login onLogin={handleLogin} />
+          <Login onLogin={handleLogin} prefilledUsername={prefilledUsername} />
           <p style={{ textAlign: "center" }}>
             Don’t have an account?{" "}
             <button onClick={() => setShowRegister(true)}>Register</button>

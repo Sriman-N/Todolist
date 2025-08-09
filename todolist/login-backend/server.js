@@ -31,20 +31,20 @@ app.post("/login", (req, res) => {
 // REGISTER ROUTE
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
+  if (!username?.trim() || !password?.trim()) {
+    return res.status(400).json({ success: false, message: "Missing fields" });
+  }
 
-  const users = JSON.parse(fs.readFileSync("users.json", "utf-8"));
-  const userExists = users.find((u) => u.username === username);
-
-  if (userExists) {
+  const users = JSON.parse(fs.readFileSync("users.json", "utf-8") || "[]");
+  if (users.some((u) => u.username === username)) {
     return res
-      .status(400)
+      .status(409)
       .json({ success: false, message: "Username already exists" });
   }
 
   users.push({ username, password });
   fs.writeFileSync("users.json", JSON.stringify(users, null, 2), "utf-8");
-
-  return res.json({ success: true, message: "User registered successfully" });
+  res.json({ success: true, message: "User registered successfully" });
 });
 
 // SAVE TODOS ROUTE

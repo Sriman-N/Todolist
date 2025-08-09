@@ -1,35 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState("");
+const Login = ({ onLogin, prefilledUsername }) => {
+  const [username, setUsername] = useState(prefilledUsername || "");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // Optional: if prefilledUsername changes later, update the input
+  useEffect(() => {
+    setUsername(prefilledUsername || "");
+  }, [prefilledUsername]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!username.trim() || !password.trim()) {
       alert("Username and password are required");
       return;
     }
-
-    // ✅ Pass username & password to parent
-    onLogin({ username, password });
+    await onLogin({ username, password });
   };
 
   return (
     <form onSubmit={handleSubmit} className="loginForm">
-      <h1>Todolist Login</h1>
-
+      <h2>Login</h2>
       <input
         type="text"
-        placeholder="Username"
+        placeholder="Enter your username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         className="loginInput"
+        autoFocus // 👈 focus when login form shows
       />
       <input
         type="password"
-        placeholder="Password"
+        placeholder="Enter your password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         className="loginInput"
