@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TodoForm from "./TodoForm";
 
-const Main = ({ setStats }) => {
+const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+
+const Main = ({ username, setStats }) => {
   const [todos, setTodos] = useState([]);
 
   // --- AI tips UI state ---
@@ -12,10 +14,64 @@ const Main = ({ setStats }) => {
   const [error, setError] = useState("");
   const [tipsCache, setTipsCache] = useState({}); // optional cache: { [id]: "tips..." }
 
+  // debounce timer for autosave
+  const saveTimer = useRef(null);
+
+  // Load todos for this user on mount / when username changes
+  useEffect(() => {
+    if (!username) return;
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/get-todos`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setTodos(Array.isArray(data.todos) ? data.todos : []);
+        } else {
+          console.error("Load todos failed:", data);
+        }
+      } catch (e) {
+        console.error("Load todos error:", e);
+      }
+    })();
+  }, [username]);
+
+  // Update stats and auto-save todos (debounced)
+  useEffect(() => {
+    // stats
+    const numItems = todos.length;
+    const numCompleted = todos.filter((todo) => todo.completed).length;
+    const percentage =
+      numItems === 0 ? 0 : Math.round((numCompleted / numItems) * 100);
+    setStats({ numItems, numCompleted, percentage });
+
+    // autosave (debounced)
+    if (!username) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(async () => {
+      try {
+        await fetch(`${API_BASE}/save-todos`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, todos }),
+        });
+      } catch (e) {
+        console.error("Save todos error:", e);
+      }
+    }, 500);
+
+    return () => clearTimeout(saveTimer.current);
+  }, [todos, username, setStats]);
+
   const addTodo = (task) => {
+    const clean = (task || "").trim();
+    if (!clean) return;
     const newTodo = {
       id: Date.now(),
-      task,
+      task: clean,
       completed: false,
     };
     setTodos((prev) => [...prev, newTodo]);
@@ -35,14 +91,6 @@ const Main = ({ setStats }) => {
     if (activeTask?.id === id) setOpen(false);
   };
 
-  useEffect(() => {
-    const numItems = todos.length;
-    const numCompleted = todos.filter((todo) => todo.completed).length;
-    const percentage =
-      numItems === 0 ? 0 : Math.round((numCompleted / numItems) * 100);
-    setStats({ numItems, numCompleted, percentage });
-  }, [todos, setStats]);
-
   async function handleGetTips(todo) {
     setActiveTask(todo);
     setOpen(true);
@@ -57,7 +105,7 @@ const Main = ({ setStats }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/ai-tips", {
+      const res = await fetch(`${API_BASE}/ai-tips`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task: todo.task }),
@@ -75,6 +123,10 @@ const Main = ({ setStats }) => {
 
   return (
     <div className="mainWrapper">
+      <div style={{ marginBottom: 8, opacity: 0.75 }}>
+        Signed in as <b>{username}</b>
+      </div>
+
       <TodoForm onAddTodo={addTodo} />
 
       <ul className="todoList">
@@ -100,13 +152,13 @@ const Main = ({ setStats }) => {
                 Delete
               </button>
 
-              {/* New: AI tips button */}
+              {/* AI tips button */}
               <button
                 onClick={() => handleGetTips(todo)}
                 className="aiBtn"
-                title="Get AI plan of attack"
+                title="AI Advice"
               >
-                AI Tips
+                Advice from AI
               </button>
             </div>
           </li>
@@ -118,7 +170,7 @@ const Main = ({ setStats }) => {
         <div className="overlay" onClick={() => setOpen(false)}>
           <div className="panel" onClick={(e) => e.stopPropagation()}>
             <div className="panelHeader">
-              <strong>AI plan of attack</strong>
+              <strong>AI Advice</strong>
               <button className="closeBtn" onClick={() => setOpen(false)}>
                 ✕
               </button>

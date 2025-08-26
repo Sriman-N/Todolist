@@ -1,4 +1,15 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
 body {
+  overflow-x: hidden;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -143,37 +154,39 @@ body {
 .dropdownWrapper {
   position: relative;
   display: inline-block;
-  margin-left: auto;
-  margin-right: 40px;
 }
 
 .menuButton {
-  font-size: 1.5rem;
-  padding: 5px 10px;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
   cursor: pointer;
+  font-size: 18px;
 }
 
 .dropdownMenu {
   position: absolute;
   right: 0;
-  background-color: white;
+  top: 100%;
+  background: white;
   border: 1px solid #ccc;
-  padding: 10px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  z-index: 1000;
+  min-width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .dropdownMenu button {
-  padding: 5px;
-  background: white;
-  border: 1px solid #ddd;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
   cursor: pointer;
 }
 
 .dropdownMenu button:hover {
-  background-color: #f0f0f0;
+  background: #f2f2f2;
 }
 
 .overlay {
@@ -186,7 +199,7 @@ body {
   z-index: 1000;
 }
 .panel {
-  width: min(520px, 90vw);
+  width: min(520px, 100%);
   height: 100%;
   background: #111; /* dark mode friendly */
   color: #fff;

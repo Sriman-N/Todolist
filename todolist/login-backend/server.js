@@ -4,12 +4,6 @@ const cors = require("cors");
 const OpenAI = require("openai"); // SDK
 require("dotenv").config(); // load .env into process.env
 
-console.log(
-  "DEBUG: OPENAI_API_KEY =",
-  process.env.OPENAI_API_KEY?.slice(0, 10) + "..."
-);
-console.log("DEBUG: OPENAI_PROJECT =", process.env.OPENAI_PROJECT);
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -62,6 +56,8 @@ app.post("/ai-tips", async (req, res) => {
     const prompt = [
       "You are a pragmatic productivity coach.",
       "Return clear, numbered steps with brief time estimates and common pitfalls.",
+      "Do not cross 300 tokens",
+      "Be kind and very helpful",
       `Task: "${task.trim()}"`,
     ].join(" ");
 
@@ -84,6 +80,59 @@ app.post("/ai-tips", async (req, res) => {
     console.error("AI error:", error);
     res.status(500).json({ error: "Failed to get AI suggestions" });
   }
+});
+
+//change password
+app.post("/change-password", (req, res) => {
+  const { username, oldPassword, newPassword } = req.body;
+
+  if (!username || !oldPassword || !newPassword) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  const users = JSON.parse(fs.readFileSync("users.json"));
+
+  // Find user
+  const user = users.find((u) => u.username === username);
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  if (user.password !== oldPassword) {
+    return res.status(401).json({ error: "Old password is incorrect" });
+  }
+
+  // Update password
+  user.password = newPassword;
+  fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
+
+  res.json({ message: "Password updated successfully" });
+});
+
+//delete account
+app.delete("/delete-account", (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username and password required" });
+  }
+
+  let users = JSON.parse(fs.readFileSync("users.json"));
+
+  const userIndex = users.findIndex(
+    (u) => u.username === username && u.password === password
+  );
+
+  if (userIndex === -1) {
+    return res.status(401).json({ error: "Invalid username or password" });
+  }
+
+  // Remove user
+  users.splice(userIndex, 1);
+  fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
+
+  res.json({ message: "Account deleted successfully" });
 });
 
 // LOGIN ROUTE
