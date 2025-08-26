@@ -105,7 +105,7 @@ function App() {
         <>
           <Login onLogin={handleLogin} prefilledUsername={prefilledUsername} />
           <p style={{ textAlign: "center" }}>
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <button onClick={() => setShowRegister(true)}>Register</button>
           </p>
         </>

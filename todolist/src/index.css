@@ -175,3 +175,50 @@ body {
 .dropdownMenu button:hover {
   background-color: #f0f0f0;
 }
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  z-index: 1000;
+}
+.panel {
+  width: min(520px, 90vw);
+  height: 100%;
+  background: #111; /* dark mode friendly */
+  color: #fff;
+  padding: 16px 20px;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+  overflow-y: auto;
+}
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.panelSub {
+  opacity: 0.8;
+  margin-bottom: 12px;
+}
+.panelBody {
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+.closeBtn,
+.aiBtn {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.aiBtn {
+  background: #2b6cb0;
+  color: #fff;
+}
+.aiBtn:hover {
+  filter: brightness(1.1);
+}
